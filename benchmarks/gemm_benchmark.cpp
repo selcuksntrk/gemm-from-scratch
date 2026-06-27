@@ -1,0 +1,47 @@
+//
+// Created by Selcuk Senturk on 27.06.2026.
+// Google Benchmarks for our programs processing measurements
+//
+
+#include "gemm.hpp"
+
+#include <benchmark/benchmark.h>
+
+#include <algorithm>
+#include <cstddef>
+#include <vector>
+
+static void BM_GemmNaive(benchmark::State& state) {
+    const auto size = static_cast<std::size_t>(state.range(0));
+
+    const std::size_t M = size;
+    const std::size_t N = size;
+    const std::size_t K = size;
+
+    std::vector<float> A(M * K, 1.0f);
+    std::vector<float> B(K * N, 1.0f);
+    std::vector<float> C(M * N, 0.0f);
+
+    for (auto _ : state) {
+        std::fill(C.begin(), C.end(), 0.0f);
+
+        gemm_naive(A.data(), B.data(), C.data(), M, N, K);
+
+        benchmark::DoNotOptimize(C.data());
+        benchmark::ClobberMemory();
+    }
+
+    const double flops = 2.0 * static_cast<double>(M) *
+                         static_cast<double>(N) *
+                         static_cast<double>(K);
+
+    state.counters["GFLOPS"] = benchmark::Counter(
+        flops,
+        benchmark::Counter::kIsIterationInvariantRate,
+        benchmark::Counter::OneK::kIs1000
+    );
+}
+
+BENCHMARK(BM_GemmNaive)->Arg(128)->Arg(256)->Arg(512);
+
+BENCHMARK_MAIN();
