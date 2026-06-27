@@ -7,6 +7,9 @@
 
 #include <cstddef>
 
+inline constexpr std::size_t kDefaultBlockSize = 64;
+
+
 void gemm_naive(
     const float* A,
     const float* B,
@@ -14,5 +17,15 @@ void gemm_naive(
     std::size_t M,
     std::size_t N,
     std::size_t K
+);
+
+void gemm_tiled(
+    const float* A,
+    const float* B,
+    float* C,
+    std::size_t M,
+    std::size_t N,
+    std::size_t K,
+    std::size_t block_size = kDefaultBlockSize
 );
 

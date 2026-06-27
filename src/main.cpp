@@ -39,5 +39,14 @@ int main()
     std::cout << "FLOPs: " << flops << '\n';
     std::cout << "GFLOPS: " << gflops << '\n';
 
+    std::vector<float> C_naive(M * N, 0.0f);
+    std::vector<float> C_tiled(M * N, 0.0f);
+
+    gemm_naive(A.data(), B.data(), C_naive.data(), M, N, K);
+    gemm_tiled(A.data(), B.data(), C_tiled.data(), M, N, K);
+
+    std::cout << "Naive C[0,0]: " << C_naive[0] << '\n';
+    std::cout << "Tiled C[0,0]: " << C_tiled[0] << '\n';
+
     return 0;
 }
