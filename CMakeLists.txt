@@ -8,10 +8,17 @@ add_library(gemm_core
         src/gemm_naive.cpp
         src/gemm_tiled.cpp
         src/gemm_neon.cpp
+        src/gemm_omp.cpp
 )
+
+find_package(OpenMP REQUIRED)
 
 target_include_directories(gemm_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(gemm_core PUBLIC
+        OpenMP::OpenMP_CXX
 )
 
 add_executable(GEMM
