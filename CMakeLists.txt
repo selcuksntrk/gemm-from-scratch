@@ -4,14 +4,16 @@ project(GEMM)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(FetchContent)
+
+find_package(OpenMP REQUIRED)
+
 add_library(gemm_core
         src/gemm_naive.cpp
         src/gemm_tiled.cpp
         src/gemm_neon.cpp
         src/gemm_omp.cpp
 )
-
-find_package(OpenMP REQUIRED)
 
 target_include_directories(gemm_core PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -28,8 +30,6 @@ add_executable(GEMM
 target_link_libraries(GEMM PRIVATE
         gemm_core
 )
-
-include(FetchContent)
 
 FetchContent_Declare(
         benchmark
@@ -54,4 +54,19 @@ add_executable(gemm_benchmark
 target_link_libraries(gemm_benchmark PRIVATE
         gemm_core
         benchmark::benchmark
+)
+
+FetchContent_Declare(
+        pybind11
+        URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.6.zip
+)
+
+FetchContent_MakeAvailable(pybind11)
+
+pybind11_add_module(gemm_cpp
+        bindings/gemm_bindings.cpp
+)
+
+target_link_libraries(gemm_cpp PRIVATE
+        gemm_core
 )
